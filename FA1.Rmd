@@ -1,0 +1,83 @@
+---
+title: "DSC1105 Formative Assessment 1"
+author: "DESQUITADO, Yuichi P."
+date: "2024-02-16"
+output: html_document
+---
+
+## Dataframe to use: [CyTOF](https://feuph.instructure.com/courses/30250/files/5488558?wrap=1)
+
+Load the necessary packages.
+
+```{r}
+library(ggplot2)
+library(dplyr)
+library(magrittr)
+library(stringr)
+library(tidyverse)
+```
+
+"df1" will be using CyTOF's NKp30 column
+"df2" will be using CyTOF's NKp44 column
+"df3" will be using CyTOF's KIR2DL1 column
+
+```{r}
+cytof_one_experiment <- read.csv("cytof_one_experiment.csv")
+df1 = data.frame(x = cytof_one_experiment$NKp30)
+df2 = cytof_one_experiment$NKp44
+df3 = cytof_one_experiment$KIR2DL1
+```
+
+Display the columns using head()
+
+```{r}
+head(df1)
+head(data.frame(x = df2))
+head(data.frame(x = df3))
+```
+
+We will be using df1 to present it using geom_ecdf and geom_density.
+
+```{r}
+ggplot(df1) + 
+  stat_ecdf(
+    color = "blue", 
+    aes(x = x)) +
+  ggtitle("CyTOF NKp30 Plot")
+ggplot(df1) + 
+  geom_density(
+    color = "green", 
+    fill = "chartreuse", 
+    linewidth = 1, 
+    alpha = 0.5, 
+    aes(x = x)) + 
+  geom_vline(
+    aes(xintercept = mean(x)), 
+    color = "blue", 
+    linetype = "dashed", 
+    size = 1)
+```
+
+
+The plot shows that the dataset is slight skewed to the left as the median and mode is on the right of the mean with a small amount of significant data on the left tail. Nevertheless, the data presented is mostly normally distributed as it follows the bell curve.
+
+We will be using df2 and df3 in a Q-Q Plot to compare the two.
+
+```{r}
+df23 = qqplot(df2, 
+              df3, 
+              plot.it = FALSE)
+qq.df = as.data.frame(df23)
+ggplot(qq.df, 
+       aes(x = x,
+           y = y)) + 
+geom_point() +
+  geom_abline(
+    slope = 1,
+    intercept = 0) +
+  xlab("NKp44") + 
+  ylab("KIR2DL1") +
+ggtitle("Q-Q Plot of NKp44 and KIR2DL1")
+```
+
+We observe that the data from NKp44 and KIR2DL1 are slightly deviated from the theoretical model (solid line at the middle). A dataset is normally distributed and follows the theoretical if the plotted points are closer to the line. We can observe that smaller values are slightly far from the line, but as the values get higher, the closer the plot are becoming to the line.
