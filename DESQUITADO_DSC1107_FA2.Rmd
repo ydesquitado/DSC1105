@@ -1,0 +1,88 @@
+---
+title: "DSC1105 Formative Assessment 2"
+author: "DESQUITADO, Yuichi P."
+date: "2024-02-20"
+output: html_document
+---
+
+# Preliminary
+
+## We first load the necessary packages needed for this formative assessment, especially tidyverse, dplyr, and dcldata.
+
+```{r}
+library(tidyr)
+library(tidyverse)
+library(remotes)
+library(dplyr)
+#remotes::install_github("dcl-docs/dcldata")
+library(dcldata)
+
+CyTOF <- read.csv("CyTOF.csv",
+                  header = TRUE)
+df <- CyTOF
+head(df)
+```
+
+1. Use pivot_longer to reshape the dataset into one that has two columns, the first giving the protein identity and the second giving the amount of the protein in one of the cells. The dataset you get should have 1750000 rows (50000 cells in the original dataset times 35 proteins).
+
+```{r}
+proteinNames <- colnames(df)
+
+proteinDF <- df %>% 
+  pivot_longer(
+  proteinNames, 
+  names_to = "Proteins", 
+  values_to = "ProteinContentsInCells")
+dim(proteinDF)
+head(proteinDF)
+```
+
+2. Use group_by and summarise to find the median protein level and the median absolute deviation of the protein level for each marker. (Use the R functions median and mad).
+
+```{r}
+proteinMedianDF <- proteinDF %>% group_by(Proteins) %>% 
+  summarise(
+    medianProteinLevel = median(ProteinContentsInCells), 
+    medianAbsoluteDeviation = mad(ProteinContentsInCells))
+head(proteinMedianDF)
+```
+
+3. Make a plot with mad on the x-axis and median on the y-axis. This is known as a spreadlocation (s-l) plot. What does it tell you about the relationship betwen the median and the mad?
+
+```{r}
+ggplot(
+  data = proteinMedianDF, 
+  aes(
+    x = medianAbsoluteDeviation,
+    y = medianProteinLevel, 
+    color = Proteins)) + 
+  geom_point() +
+  geom_smooth(
+    method = "lm",
+    color = "green") +
+  xlab("Median Absolute Deviation (MAD) of Protein Levels") +
+  ylab("Median of Protein Levels") +
+  ggtitle("Spread Location Plot of Protein Levels from CyTOF")
+```
+
+The plot could indicate that there is a positive slope/trend with the different protein markers in cells, yet the plot seems to show irregularity with the trend and predicted outcome due to outliers, such as TNFa.
+
+```{r}
+gymData <- example_gymnastics_2
+gymData
+```
+
+Using either pivot_longer on its own or pivot_longer in combination with separate, reshape the dataset so that it has columns for country, event, year, and score.
+
+```{r}
+gymCol <- colnames(gymData)
+
+gymDataL <- gymData %>%
+  pivot_longer(
+    cols = !country,
+    names_to = c("Event", "Year"),
+    names_sep = "_",
+    names_transform = list(Year = as.integer),
+    values_to = "Score")
+gymDataL
+```
