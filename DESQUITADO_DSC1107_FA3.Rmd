@@ -1,0 +1,185 @@
+---
+title: "DSC1105 FORMATIVE ASSESSMENT 3"
+author: "DESQUITADO, Yuichi P."
+date: "2024-02-23"
+output: html_document
+---
+
+# **Preliminary**
+
+## We install and initiate the **ggplot** package containing the Diamonds dataset we need for this assessment.
+
+```{r}
+library(ggplot2)
+df <- diamonds
+head(df)
+```
+
+---
+
+## 1. Create a histogram on the diamonds dataset, for example with `ggplot() + geom_histogram(aes(x = carat), data = diamonds)`
+
+Re-write this using the **layer function** like we did in class. 
+
+*Hint: if you don’t know what the default values for some of the aspects of the plot, examine p$layers.*
+
+### To show the difference, I first use geom_histogram to create the graph. 
+
+```{r}
+ggplot(
+  data = df) + 
+  geom_histogram(
+    mapping = aes(
+      x = carat),
+    binwidth = 0.1) +
+  scale_x_continuous(
+    breaks = seq(0, 
+                 max(df$carat), 
+                 by = 0.5)) + 
+  scale_y_continuous(
+    breaks = seq(0, 
+                 20000, 
+                 by = 1250)) + 
+  xlab("Carat") + 
+  ylab("Count") +
+  ggtitle("Histogram of Diamonds dataset according to Carat using geom_histogram")
+```
+
+### We then use layer function to recreate the graph we made beforehand. In layer, we use `geom = "bar"` and `stat = "bin"` for histogram.
+
+```{r}
+ggplot() + 
+  layer(
+    data = df, 
+    mapping = aes(x = carat),
+    geom = "bar", 
+    stat = "bin",
+    position = "identity", 
+    params = list(binwidth = 0.1)) + 
+  scale_x_continuous(
+    breaks = seq(0, 
+                 max(df$carat), 
+                 by = 0.5)) +
+  scale_y_continuous(
+    breaks = seq(0, 
+                 20000, 
+                 by = 1250)) + 
+  xlab("Carat") + 
+  ylab("Count") +
+  ggtitle("Histogram of Diamonds according to Carat using layer")
+```
+
+---
+
+## 2. Remember that a histogram is a plot with stat_bin and geom_bar. Modify your histogram code so that it uses a different geom, for example geom_line or geom_point. This should be simple once you have the layer specification of a histogram.
+
+### For this number, we will be using `geom = "polygon"` and `stat = "bin"`.
+
+```{r}
+ggplot() + 
+  layer(
+    data = df, 
+    mapping = aes(
+      x = carat, 
+      fill = color),
+    geom = "polygon", 
+    stat = "bin",
+    position = "stack",
+    params = list(binwidth = 0.1)) + 
+  scale_x_continuous(
+    breaks = seq(0, 
+                 max(df$carat), 
+                 by = 0.5)) +
+  scale_y_continuous(
+    breaks = seq(0, 
+                 20000, 
+                 by = 1250)) + 
+  xlab("Carat") + 
+  ylab("Count") +
+  ggtitle("Histogram of Diamonds dataset according to Carat using bar and polygon")
+```
+
+---
+
+## 3. In your histogram (the one plotted with bars that you created in question 1), add an aesthetic mapping from one of the factor variables (maybe color or clarity) to the fill or color aesthetic.
+
+### For this number, we will use `fill = "color"` so that they would be color-coded according to their class.
+
+```{r}
+ggplot() + 
+  layer(
+    data = df, 
+    mapping = aes(
+      x = carat, 
+      fill = clarity),
+    geom = "bar", 
+    stat = "bin",
+    position = "stack") + 
+  scale_x_continuous(
+    breaks = seq(0, 
+                 max(df$carat), 
+                 by = 0.5)) + 
+scale_y_continuous(
+    breaks = seq(0, 
+                 20000, 
+                 by = 1250)) + 
+  xlab("Carat") + 
+  ylab("Count") +
+  ggtitle("Colored histogram of Diamonds dataset according to Carat using layer")
+```
+
+---
+
+## 4. What is the default position adjustment for a histogram? Try changing the position adjustment in the histogram you created in question 3 to something different (hint: try dodge). 
+
+### For this number, we will set make two graphs, one with `position = "stack"` and `position = "dodge"`.
+
+```{r}
+ggplot() + 
+  layer(
+    data = df, 
+    mapping = aes(
+      x = carat, 
+      fill = color),
+    geom = "bar", 
+    stat = "bin",
+    position = "stack",
+    params = list(binwidth = 0.1)) + 
+  scale_x_continuous(
+    breaks = seq(0, 
+                 max(df$carat), 
+                 by = 0.5)) + 
+  scale_y_continuous(
+    breaks = seq(0, 
+                 20000, 
+                 by = 1250)) + 
+  xlab("Carat") + 
+  ylab("Count") +
+  ggtitle("Histogram of Diamonds dataset according to Carat")
+
+ggplot() + 
+  layer(
+    data = df, 
+    mapping = aes(
+      x = carat, 
+      fill = color),
+    geom = "bar", 
+    stat = "bin",
+    position = "dodge",
+    params = list(binwidth = 0.25)) + 
+  scale_x_continuous(
+    breaks = seq(0, 
+                 max(df$carat), 
+                 by = 0.5)) + 
+  scale_y_continuous(
+    breaks = seq(0, 
+                 20000, 
+                 by = 1250)) + 
+  xlab("Carat") + 
+  ylab("Count") +
+  ggtitle("Histogram of Diamonds dataset according to Carat with position = dodge")
+```
+
+### Dodge basically interprets or shows its graph by separating classes of the dataset. Since we used `fill = "color"`, the dodge separated the columns shown in the graph by color.
+
+---
